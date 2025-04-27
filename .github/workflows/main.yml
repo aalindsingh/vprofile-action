@@ -35,11 +35,22 @@ jobs:
           -Dsonar.java.binaries-target/test-classes/com/visualpathit/account/controllerTest/ 
           -Dsonar.java.binaries=target/classes   
 
-  #BUILD_AND_PUBLISH:
-  #  needs: Testing
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #  - name: Code Checkout
-  #    uses: actions/checkout@v4
-  #  - name:   
+  BUILD_AND_PUBLISH:
+    needs: Testing
+    runs-on: ubuntu-latest
+    steps:
+    - name: Code Checkout
+      uses: actions/checkout@v4
+    - name: Build & Upload Image to ECR
+      uses: appleboy/docker-ecr-action@master
+      with:
+        access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        registry: ${{ secrets.REGISTRY }}
+        region: ${{ env.AWS_REGIONS }}
+        repo: ${{ env.ECR_REPOSITORY }}
+        tags: latest,${{ github.run_number }}
+        daemon_off: false
+        dockerfile: ./Dockerfile
+        context: ./  
 
